@@ -30,7 +30,7 @@ func TaskRecorder(w http.ResponseWriter, r *http.Request) {
 }
 
 func GreetTask(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %v", task)
+	fmt.Fprintf(w, "Hello, %v", task.Message)
 }
 
 func main() {
