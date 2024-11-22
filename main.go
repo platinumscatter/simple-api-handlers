@@ -6,6 +6,8 @@ import (
     "github.com/gorilla/mux"
 )
 
+var task string
+
 func HelloHandler(w http.ResponseWriter, r *http.Request) {
     fmt.Fprintln(w, "Hello, World!")
 }
