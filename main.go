@@ -8,14 +8,10 @@ import (
 	"github.com/gorilla/mux"
 )
 
-type requestBody struct {
-	Message string `json:"message"`
-}
-
-var task requestBody
+var task Message
 
 func TaskRecorder(w http.ResponseWriter, r *http.Request) {
-	var body requestBody
+	var body Message
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&body)
 	if err != nil {
@@ -23,17 +19,27 @@ func TaskRecorder(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Invalid request body: %v", err)
 		return
 	}
+
 	task = body
+
+	result := DB.Create(&task)
+	if result.Error != nil {
+		panic(result)
+	}
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Task recorded successfully")
-
 }
 
 func GreetTask(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Hello, %v", task.Message)
+	DB.Find(&task)
+	fmt.Fprintf(w, "Fields: %v", task)
 }
 
 func main() {
+	InitDB()
+
+	DB.AutoMigrate(&Message{})
+
 	router := mux.NewRouter()
 	router.HandleFunc("/api/task", GreetTask).Methods("GET")
 	router.HandleFunc("/api/task", TaskRecorder).Methods("POST")
