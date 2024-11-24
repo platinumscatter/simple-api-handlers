@@ -15,7 +15,6 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	decoder := json.NewDecoder(r.Body)
 	err := decoder.Decode(&bodyHolder)
 	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
 		fmt.Fprintf(w, "Invalid request body: %v", err)
 		return
 	}
@@ -55,12 +54,19 @@ func UpdateTaskById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	jsonData, err := json.Marshal(updatedTask)
+	if err != nil {
+		panic(err)
+	}
+
 	result := DB.Model(&Message{}).Where("id = ?", id).Updates(updatedTask)
 	if result.Error != nil {
 		fmt.Fprintf(w, "Error updating task: %v", result.Error)
 		return
 	}
-	fmt.Fprintf(w, "Task updated successfully")
+
+	fmt.Fprintf(w, "Task updated successfully:\n")
+	w.Write(jsonData)
 }
 
 func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
