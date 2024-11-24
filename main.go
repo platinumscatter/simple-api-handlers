@@ -25,7 +25,17 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		panic(result)
 	}
-	fmt.Fprintf(w, "Task recorded successfully")
+
+	result = DB.Find(&task)
+	if result.Error != nil {
+		panic(result)
+	}
+
+	jsonData, err := json.Marshal(task)
+	if err != nil {
+		panic(err)
+	}
+	w.Write(jsonData)
 }
 
 func GetAllTasks(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +69,17 @@ func UpdateTaskById(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error updating task: %v", result.Error)
 		return
 	}
-	GetAllTasks(w, r)
+
+	result = DB.Find(&updatedTask)
+	if result.Error != nil {
+		panic(result)
+	}
+
+	jsonData, err := json.Marshal(updatedTask)
+	if err != nil {
+		panic(err)
+	}
+	w.Write(jsonData)
 }
 
 func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
@@ -76,7 +96,7 @@ func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error deleting task: %v", result.Error)
 		return
 	}
-	GetAllTasks(w, r)
+	fmt.Printf("Task with ID %d deleted", taskToDelete.ID)
 }
 
 func main() {
