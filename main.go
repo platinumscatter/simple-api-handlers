@@ -54,19 +54,12 @@ func UpdateTaskById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	jsonData, err := json.Marshal(updatedTask)
-	if err != nil {
-		panic(err)
-	}
-
 	result := DB.Model(&Message{}).Where("id = ?", id).Updates(updatedTask)
 	if result.Error != nil {
 		fmt.Fprintf(w, "Error updating task: %v", result.Error)
 		return
 	}
-
-	fmt.Fprintf(w, "Task updated successfully:\n")
-	w.Write(jsonData)
+	GetAllTasks(w, r)
 }
 
 func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
@@ -83,8 +76,7 @@ func DeleteTaskById(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Error deleting task: %v", result.Error)
 		return
 	}
-
-	fmt.Fprintf(w, "Task deleted successfully")
+	GetAllTasks(w, r)
 }
 
 func main() {
