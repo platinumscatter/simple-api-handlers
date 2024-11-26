@@ -3,7 +3,9 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	"github.com/platinumscatter/simple_api/internal/taskService"
 )
 
@@ -43,28 +45,42 @@ func (h *Handler) PostTaskHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) UpdateTaskHandler(w http.ResponseWriter, r *http.Request) {
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
+	if err != nil {
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
+		return
+	}
+
 	var task taskService.Task
-	err := json.NewDecoder(r.Body).Decode(&task)
+	err = json.NewDecoder(r.Body).Decode(&task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	updatedTask, err := h.Service.UpdateTaskByID(task.ID, task)
+
+	task.ID = uint(id)
+	updatedTask, err := h.Service.UpdateTaskByID(uint(id), task)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(updatedTask)
 }
 
 func (h *Handler) DeleteTaskHandler(w http.ResponseWriter, r *http.Request) {
-	var task taskService.Task
-	err := json.NewDecoder(r.Body).Decode(&task)
+	vars := mux.Vars(r)
+	id, err := strconv.ParseUint(vars["id"], 10, 32)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, "Invalid ID format", http.StatusBadRequest)
 		return
 	}
+	
+	var task taskService.Task
+
+	task.ID = uint(id)
 	err = h.Service.DeleteTaskByID(task.ID)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
