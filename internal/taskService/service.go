@@ -5,7 +5,7 @@ type TaskService struct {
 }
 
 func NewService(repo taskRepository) *TaskService {
-	return &TaskService{repo: &repo}
+	return &TaskService{repo: &repo}	
 }
 
 func (s *TaskService) CreateTask(task Task) (Task, error) {
