@@ -13,7 +13,9 @@ import (
 
 func main() {
 	database.InitDB()
-	database.DB.AutoMigrate(&taskService.Task{})
+	if err := database.DB.AutoMigrate(&taskService.Task{}); err != nil {
+		log.Fatalf("failed to migrate database: %v", err)
+	}
 
 	repo := taskService.NewTaskRepository(database.DB)
 	service := taskService.NewService(*repo)
@@ -22,7 +24,7 @@ func main() {
 
 	e := echo.New()
 
-	e.Use(middleware.Logger())
+	e.Use(middleware.Logger()) 
 	e.Use(middleware.Recover())
 
 	strictHandler := tasks.NewStrictHandler(handler, nil)
