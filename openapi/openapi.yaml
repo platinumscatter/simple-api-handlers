@@ -1,89 +1,106 @@
 openapi: 3.0.0
 info:
-  title: API
+  title: Simple API
   version: 1.0.0
 paths:
-  /tasks:
+  /users:
     get:
-      summary: Get all tasks
       tags:
-        - tasks
+        - users
+      summary: Get all users
       responses:
         '200':
-          description: A list of tasks
+          description: List of users
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Task'
+                  $ref: '#/components/schemas/User'
     post:
-      summary: Create a new task
       tags:
-        - tasks
+        - users
+      summary: Create a new user
       requestBody:
-        description: The task to create
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/UserCreate'
       responses:
         '201':
-          description: The created task
+          description: User created successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
-  /tasks/{id}:
+                $ref: '#/components/schemas/User'
+  /users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+        description: User ID
     patch:
-      summary: Update a task by ID
       tags:
-        - tasks
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: uint
+        - users
+      summary: Update user
       requestBody:
-        description: Fields to update in the task
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Task'
+              $ref: '#/components/schemas/UserUpdate'
       responses:
         '200':
-          description: The updated task
+          description: User updated successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Task'
+                $ref: '#/components/schemas/User'
     delete:
-      summary: Delete a task by ID
       tags:
-        - tasks
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: integer
-            format: uint
+        - users
       responses:
         '204':
-          description: Task successfully deleted
+          description: User successfully deleted
 components:
   schemas:
-    Task:
+    UserCreate:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    
+    UserUpdate:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+    
+    User:
       type: object
       properties:
         id:
           type: integer
-          format: uint
-        task:
+        email:
           type: string
-        is_done:
-          type: boolean
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time

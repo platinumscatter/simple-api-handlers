@@ -11,6 +11,12 @@ type Handler struct {
 	Service *taskService.TaskService
 }
 
+func NewHandler(service *taskService.TaskService) *Handler {
+	return &Handler{
+		Service: service,
+	}
+}
+
 func (h *Handler) GetTasks(_ context.Context, _ tasks.GetTasksRequestObject) (tasks.GetTasksResponseObject, error) {
 	allTasks, err := h.Service.GetAllTasks()
 	if err != nil {
@@ -53,34 +59,28 @@ func (h *Handler) PostTasks(_ context.Context, request tasks.PostTasksRequestObj
 
 func (h *Handler) PatchTasksId(_ context.Context, request tasks.PatchTasksIdRequestObject) (tasks.PatchTasksIdResponseObject, error) {
 	taskToUpdate := taskService.Task{
-        Task:   *request.Body.Task,
-        IsDone: *request.Body.IsDone,
-    }
-    
-    updatedTask, err := h.Service.UpdateTaskByID(request.Id, taskToUpdate)
-    if err != nil {
-        return nil, err
-    }
-    
-    response := tasks.PatchTasksId200JSONResponse{
-        Id:     &updatedTask.ID,
-        Task:   &updatedTask.Task,
-        IsDone: &updatedTask.IsDone,
-    }
+		Task:   *request.Body.Task,
+		IsDone: *request.Body.IsDone,
+	}
+
+	updatedTask, err := h.Service.UpdateTaskByID(request.Id, taskToUpdate)
+	if err != nil {
+		return nil, err
+	}
+
+	response := tasks.PatchTasksId200JSONResponse{
+		Id:     &updatedTask.ID,
+		Task:   &updatedTask.Task,
+		IsDone: &updatedTask.IsDone,
+	}
 	return response, nil
 }
 
 func (h *Handler) DeleteTasksId(_ context.Context, request tasks.DeleteTasksIdRequestObject) (tasks.DeleteTasksIdResponseObject, error) {
 	err := h.Service.DeleteTaskByID(request.Id)
-    if err != nil {
-        return nil, err
-    }
-    
-    return tasks.DeleteTasksId204Response{}, nil
-}
-
-func NewHandler(service *taskService.TaskService) *Handler {
-	return &Handler{
-		Service: service,
+	if err != nil {
+		return nil, err
 	}
+
+	return tasks.DeleteTasksId204Response{}, nil
 }
