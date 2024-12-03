@@ -5,6 +5,7 @@ import "gorm.io/gorm"
 type TaskRepository interface {
 	CreateTask(task Task) (Task, error)
 	GetAllTasks() ([]Task, error)
+	GetTasksByUserID(userID uint) ([]Task, error)
 	UpdateTaskByID(id uint, task Task) (Task, error)
 	DeleteTaskByID(id uint) error
 }
@@ -34,6 +35,12 @@ func (r *taskRepository) GetAllTasks() ([]Task, error) {
 func (r *taskRepository) UpdateTaskByID(id uint, task Task) (Task, error) {
 	err := r.db.Model(&task).Where("id = ?", id).Updates(task).Error
 	return task, err
+}
+
+func (r *taskRepository) GetTasksByUserID(userID uint) ([]Task, error) {
+	var tasks []Task
+	err := r.db.Where("user_id = ?", userID).Find(&tasks).Error
+	return tasks, err
 }
 
 func (r *taskRepository) DeleteTaskByID(id uint) error {

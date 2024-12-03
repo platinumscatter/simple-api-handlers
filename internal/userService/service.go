@@ -3,8 +3,9 @@ package userService
 type UserService struct {
 	repo UserRepository
 }
+
 func NewService(repo UserRepository) *UserService {
-	return &UserService{repo: repo}	
+	return &UserService{repo: repo}
 }
 
 func (s *UserService) CreateUser(email, password User) (User, error) {
