@@ -138,7 +138,7 @@ paths:
       responses:
         '204':
           description: Task successfully deleted
-  /tasks/user/{user_id}:
+  /user/{user_id}/tasks:
     get:
       summary: Get tasks for specific user
       tags:
@@ -166,7 +166,6 @@ components:
       type: object
       required:
         - task
-        - user_id
       properties:
         id:
           type: integer
